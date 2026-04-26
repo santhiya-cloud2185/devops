@@ -1,24 +1,23 @@
-name: Node CI
+name: Docker CI
 
 on:
   push:
     branches: [ "main" ]
 
 jobs:
-  build:
+  docker-build:
     runs-on: ubuntu-latest
 
     steps:
       - name: Get code
         uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18
+      - name: Build Docker image
+        run: docker build -t meena-app .
 
-      - name: Check Node version
-        run: node -v
+      - name: Run Docker container
+        run: docker run -d -p 5000:5000 --name meena-container meena-app
 
-      - name: Run app quick check
-        run: timeout 5s node app.js || true
+      - name: Test app
+        run: curl http://localhost:5000
+
